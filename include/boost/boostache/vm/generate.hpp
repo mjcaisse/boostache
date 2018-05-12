@@ -9,6 +9,7 @@
 #ifndef BOOST_BOOSTACHE_VM_GENERATE_HPP
 #define BOOST_BOOSTACHE_VM_GENERATE_HPP
 
+#include <boost/boostache/vm/detail/context_wrapper.hpp>
 #include <boost/boostache/vm/detail/engine_visitor.hpp>
 
 namespace boost { namespace boostache { namespace vm
@@ -18,7 +19,7 @@ namespace boost { namespace boostache { namespace vm
                 , Template const & templ
                 , Context const & context)
    {
-      vm::detail::generate(stream, templ, context);
+      vm::detail::generate(stream, templ, detail::make_context(context));
    }
 }}}
 

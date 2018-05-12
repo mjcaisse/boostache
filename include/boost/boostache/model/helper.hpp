@@ -18,6 +18,5 @@
 #include <boost/boostache/model/render_traits.hpp>
 #include <boost/boostache/model/basic_test_extension.hpp>
 #include <boost/boostache/model/basic_render_extension.hpp>
-#include <boost/boostache/model/unwrap_variant.hpp>
 
 #endif

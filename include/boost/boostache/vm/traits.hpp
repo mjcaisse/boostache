@@ -11,6 +11,7 @@
 
 #include <boost/mpl/has_xxx.hpp>
 #include <boost/variant/variant.hpp>
+#include <boost/optional.hpp>
 #include <map>
 #include <type_traits>
 
@@ -38,6 +39,61 @@ namespace boost { namespace boostache { namespace vm { namespace trait
 
    template <typename T>
    using enable_if_is_variant_t = typename std::enable_if<is_variant<T>::value>::type;
+   // ----------------------------------------------------------------
+   // ----------------------------------------------------------------
+
+
+   // ----------------------------------------------------------------
+   // optional traits
+   // ----------------------------------------------------------------
+   template <typename T>
+   struct is_optional
+      : std::false_type
+   {};
+
+   template <typename T>
+   struct is_optional<boost::optional<T>>
+      : std::true_type
+   {};
+
+   template<class T>
+   bool constexpr is_optional_v = is_optional<T>::value;
+
+   // ----------------------------------------------------------------
+   // ----------------------------------------------------------------
+
+
+   // ----------------------------------------------------------------
+   // convertable to bool traits
+   //
+   // This implementation was suggested by Matt Calabrese. Thanks Matt!
+   // ----------------------------------------------------------------
+   namespace detail
+   {
+      template< class T
+              , class = void >
+      struct is_contextually_convertible_to_bool_impl
+         : std::false_type
+      {};
+
+      template<class T>
+      struct is_contextually_convertible_to_bool_impl
+      < T
+      , decltype(!!std::declval< T >() ? (void)0 : (void)0)
+      >
+           : std::true_type
+      {};
+   }
+
+   template<class T>
+   struct is_contextually_convertible_to_bool
+      : detail::is_contextually_convertible_to_bool_impl<T>
+   {};
+
+   template<class T>
+   bool constexpr is_contextually_convertible_to_bool_v
+   = detail::is_contextually_convertible_to_bool_impl<T>::value;
+
    // ----------------------------------------------------------------
    // ----------------------------------------------------------------
 

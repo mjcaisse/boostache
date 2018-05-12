@@ -10,6 +10,7 @@
 #define BOOST_BOOSTACHE_VM_DETAIL_ENGINE_VISITOR_HPP
 
 #include <boost/boostache/vm/engine_ast.hpp>
+#include <boost/boostache/vm/detail/context_wrapper.hpp>
 #include <boost/boostache/vm/detail/foreach.hpp>
 #include <boost/boostache/vm/detail/select_context.hpp>
 #include <boost/boostache/model/select_traits.hpp>
@@ -68,8 +69,9 @@ namespace boost { namespace boostache { namespace vm { namespace detail
 
       void operator()(ast::render const & r) const
       {
-         using boost::boostache::extension::render;
-         render(stream, context, r.name);
+         //using boost::boostache::extension::render;
+         //render(stream, context, r.name);
+         context.render(stream, r.name);
       }
 
       void operator()(ast::for_each const & v) const
@@ -80,8 +82,8 @@ namespace boost { namespace boostache { namespace vm { namespace detail
 
       void operator()(ast::if_then_else const & v) const
       {
-         using boost::boostache::extension::test;
-         if(test(context, v.condition_.name))
+         //using boost::boostache::extension::test;
+         if(context.test(v.condition_.name))
          {
             boost::apply_visitor(*this, v.then_);
          }
@@ -93,8 +95,8 @@ namespace boost { namespace boostache { namespace vm { namespace detail
 
       void operator()(ast::select_context const & select_ctx) const
       {
-         select_context_dispatch( stream, select_ctx, context
-                                , extension::select_category_t<Context>{} );
+         select_context( stream, select_ctx, context
+                       , typename Context::select_category_t{} );
       }
 
       void operator()(ast::node_list const & nodes) const
@@ -116,12 +118,12 @@ namespace boost { namespace boostache { namespace vm { namespace detail
    };
 
 
-   template <typename Stream, typename Template, typename Context>
+   template <typename Stream, typename Template, typename P, typename T>
    void generate( Stream & stream
                 , Template const & templ
-                , Context const & ctx)
+                , vm::detail::context_wrapper<P,T> const & ctx)
    {
-      engine_visitor_base<Stream,Context> engine(stream, ctx);
+      engine_visitor_base<Stream,detail::context_wrapper<P,T>> engine(stream, ctx);
       engine(templ);
    }
 

@@ -22,13 +22,13 @@
 
 namespace boost { namespace boostache { namespace vm
 {
-   template <typename Stream, typename Template, typename Context>
-   void generate( Stream & stream
-                , Template const & templ
-                , Context const & context);
-
    namespace detail
    {
+      template <typename Stream, typename Template, typename Context>
+      void generate( Stream & stream
+                   , Template const & templ
+                   , Context const & context);
+
       template <typename Stream, typename Node, typename Context>
       void foreach(Stream & stream, Node const & node, Context const & context);
    }
@@ -100,13 +100,11 @@ namespace boost { namespace boostache { namespace vm { namespace detail
                , Context const & context
                , extension::variant_attribute)
    {
-      boost::apply_visitor( boostache::detail::make_unwrap_variant_visitor(
-                               [&stream,&node](auto ctx)
-                               {
-                                  vm::detail::foreach(stream, node, ctx);
-                               }
-                            )
-                          , context);
+      boost::apply_visitor([&stream,&node](auto & unwrapped_ctx)
+                           {
+                              vm::detail::foreach(stream, node, unwrapped_ctx);
+                           }
+                           , context);
    }
 
 

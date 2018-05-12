@@ -1,7 +1,7 @@
 /**
  *  \file test_traits.hpp
  *
- *  Copyright 2014, 2015 Michael Caisse : ciere.com
+ *  Copyright 2014 - 2017 Michael Caisse : ciere.com
  *
  *  Distributed under the Boost Software License, Version 1.0. (See accompanying
  *  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,6 +23,14 @@ namespace boost { namespace boostache { namespace extension
    // test category
    template <typename T, typename Enable = void>
    struct test_category
+      : mpl::identity<unused_attribute> {};
+
+   template <typename T>
+   struct test_category< T
+                       , std::enable_if_t<
+                            !vm::trait::is_optional_v<T>
+                            && vm::trait::is_contextually_convertible_to_bool_v<T> >
+                       >
       : mpl::identity<plain_attribute> {};
 
    template <typename T>
@@ -40,11 +48,6 @@ namespace boost { namespace boostache { namespace extension
                        , vm::trait::enable_if_sequence_not_map_t<T>
                        >
       : mpl::identity<sequence_attribute> {};
-
-   // template <typename T>
-   // struct test_category<T,
-   //                      decltype(T::empty())>
-   //    : mpl::identity<sequence_attribute> {};
 
    template <typename T>
    struct test_category<boost::optional<T>>
